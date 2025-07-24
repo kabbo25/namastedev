@@ -2,15 +2,14 @@ import {useEffect, useRef, useState} from "react";
 
 
 const App = () => {
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [currentTime, setCurrentTime] = useState(0);
     const [clockState, setClockState] = useState('stopped');
-    const startTime = useRef(new Date());
     const clockId = useRef(null);
    useEffect(()=>{
       if(clockState !== 'running') return;
-      startTime.current = new Date();
+
       clockId.current = setInterval(()=>{
-         setCurrentTime(new Date());
+         setCurrentTime(prev=>prev+1000);
       },1000);
    },[clockState]) ;
     const handleStart = ()=>{
@@ -20,11 +19,15 @@ const App = () => {
         clearInterval(clockId.current);
         setClockState('stopped');
     }
+    const formatTime = (seconds)=>{
+       return `${Math.floor(seconds/(60*1000)).toString().padStart(2,'0')} : ${((seconds/1000)%60).toString().padStart(2,'0')}`
+    }
+
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center">
             <div className="bg-white rounded-lg shadow-lg p-8 text-center">
                 <h1 className="text-6xl font-bold text-gray-800 mb-8">
-                    {(currentTime.getSeconds()-startTime.current.getSeconds()+60)%60}
+                    {formatTime(currentTime)}
                 </h1>
                 <button
                     onClick={handleStart}
